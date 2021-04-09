@@ -77,7 +77,7 @@ export default function FrontPage():JSX.Element {
                                                 setWcaID(user.wca_id);
                                             }} 
                                             key={index}>
-                                                {user.name}
+                                                {user.name} <span className="text-sm italic">({user.wca_id})</span>
                                         </h2>
                                     )
                                 })}
