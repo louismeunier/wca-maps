@@ -67,7 +67,7 @@ export default function FrontPage():JSX.Element {
                         <h1>Search for a user</h1>
                         {isLoading && <h1 className="text-red-500 absolute italic">Loading...</h1>}
                         <div>
-                            <input className="rounded-lg" placeholder="Begin typing..." onChange={handleChange} type="text"></input>
+                            <input className="rounded-lg text-center" placeholder="Begin typing..." onChange={handleChange} type="text"></input>
                             <div className="absolute">
                                 {autocomplete && autocomplete.map((user, index) => {
                                     return (
