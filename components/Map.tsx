@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { getCountry } from "@logic/geo-api";
-import { LatLngExpression } from "leaflet";
+import type { LatLngExpression } from "leaflet";
 import { useEffect } from "react";
 
 const Map = (props: { layers: JSX.Element[], center: LatLngExpression }):JSX.Element => {

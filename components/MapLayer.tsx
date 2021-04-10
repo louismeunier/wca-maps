@@ -1,4 +1,5 @@
-import { LatLngExpression, icon } from "leaflet";
+import { icon } from "leaflet";
+import type { LatLngExpression } from "leaflet";
 import { Marker, Popup } from "react-leaflet";
 
 export default function MapLayer(props: { position: LatLngExpression, message: string, notable?: boolean }):JSX.Element {

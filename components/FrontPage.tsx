@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import { useState, useEffect } from "react";
 import { getUserCompetitions, searchUsers } from "@logic/wca-api";
 import { averageGeoPoint } from "@logic/calculations";
-import { LatLngExpression } from "leaflet";
+import type { LatLngExpression } from "leaflet";
 
 const MapLayer = dynamic(() => import("@components/MapLayer"), {
     ssr: false
