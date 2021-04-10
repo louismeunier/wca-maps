@@ -22,12 +22,14 @@
       "@components/*": ["./components/*"],
       "@pages/*": ["./pages/*"],
       "@styles/*": ["./styles/*"],
-      "@logic/*": ["./logic/*"]
+      "@logic/*": ["./logic/*"],
+      "@types/*": ["./@types/*"]
     }
   },
   "include": [
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "@types/*"
   ],
   "exclude": [
     "node_modules"
