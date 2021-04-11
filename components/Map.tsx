@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { getCountry } from "@logic/geo-api";
-import type { LatLngExpression } from "leaflet";
+import { LatLngBounds, LatLngBoundsExpression, LatLngExpression } from "leaflet";
 import { useEffect } from "react";
 
 const Map = (props: { layers: JSX.Element[], center: LatLngExpression }):JSX.Element => {
@@ -23,6 +23,11 @@ const Map = (props: { layers: JSX.Element[], center: LatLngExpression }):JSX.Ele
             center={[0,0]}
             zoom={2}
             minZoom={2}
+            maxBounds={[
+                [-180,-180],
+                [180,180],
+              ]}
+            maxBoundsViscosity={0.5}
             scrollWheelZoom={true}
             zoomControl={false}
             className="h-full w-full z-0"
