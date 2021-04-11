@@ -54,13 +54,13 @@ export default function FrontPage():JSX.Element {
                         const coordinateArray:number[][] = filteredCompetitions.map((competition, index)=> {
                             layers.push(<MapLayer key={index+1} position={[competition.latitude_degrees, competition.longitude_degrees]} message={`${competition.name}`}/>)
                             return [competition.latitude_degrees, competition.longitude_degrees]
-                        });
+                        })
 
                         setCompetitionData(filteredCompetitions);
 
                         const averageCoordinate:LatLngExpression = averageGeoPoint(coordinateArray)
 
-                        setCenter(averageCoordinate)
+                        setCenter(averageCoordinate);
                         setLayers([<MapLayer notable key={0} position={averageCoordinate} message={`Average`}/>, ...layers])
                         setIsLoading(false)
                     })
@@ -104,12 +104,16 @@ export default function FrontPage():JSX.Element {
                                         return (
                                             <div 
                                                 onClick={() => setWcaData(user)}
-                                                className="hover: cursor-pointer p-2 text-center border-t-2 border-gray-500" 
+                                                className = {
+                                                    key === 0
+                                                    ? "group p-2 text-center border-t-2 border-gray-500 hover: cursor-pointer hover:bg-gray-300" 
+                                                    : "group p-2 text-center border-t-2 border-gray-500 hover: cursor-pointer hover:bg-gray-300 rounded-b-xl" 
+                                                }
                                                 key={key}
                                                 >
-                                                <span className="underline text-lg">
+                                                <span className="group-hover:text-gray-600 underline text-lg">
                                                     {user.name}
-                                                    <span className="no-underline text-sm">
+                                                    <span className="group-hover:text-gray-600 no-underline text-sm">
                                                         ({user.wca_id})
                                                     </span>
                                                 </span>
