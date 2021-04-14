@@ -23,7 +23,8 @@
       "@pages/*": ["./pages/*"],
       "@styles/*": ["./styles/*"],
       "@logic/*": ["./logic/*"],
-      "@types/*": ["./@types/*"]
+      "@types/*": ["./@types/*"],
+      "@data/*": ["./data/*"]
     }
   },
   "include": [
