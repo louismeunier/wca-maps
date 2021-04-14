@@ -3,14 +3,14 @@ import { useState, useEffect } from "react";
 import { getUserCompetitions, searchUsers } from "@logic/wca-api";
 import { averageGeoPoint } from "@logic/calculations";
 import type { LatLngExpression } from "leaflet";
-//import { LocationStats } from "@components/LocationStats";
+import { LocationStats } from "@components/Stats/LocationStats";
 import { Loading } from "./Loading";
 
-const MapLayer = dynamic(() => import("@components/MapLayer"), {
+const MapLayer = dynamic(() => import("@components/Map/MapLayer"), {
     ssr: false
 })
 
-const MapWithNoSSR = dynamic(() => import("@components/Map"), {
+const MapWithNoSSR = dynamic(() => import("@components/Map/Map"), {
     ssr: false
 });
 
@@ -34,11 +34,12 @@ export default function FrontPage():JSX.Element {
                 setAutocomplete(filteredUsers);
             })
             .catch(err => {
-                alert("error")
+                alert("An error occurred! Please refresh the page.")
             })
     }
     
     const handleClick = () => {
+        setCompetitionData(null);
         if (!wcaData || !wcaData?.wca_id) return;
         setIsLoading(true)
         getUserCompetitions(wcaData.wca_id)
@@ -47,7 +48,7 @@ export default function FrontPage():JSX.Element {
                     .then(resArr => {
                         const layers:JSX.Element[] = [];
                         const filteredCompetitions:WCACompetition[] = resArr.filter(competition => {
-                            if (competition.city.toLowerCase() === 'multiple cities') return false
+                            if (competition.city.toLowerCase().match(/multiple cities/g)) return false
                             else return true
                         });
 
@@ -88,32 +89,34 @@ export default function FrontPage():JSX.Element {
             }
 
             <div className="w-screen h-screen m-0">
-                <div className="fixed w-1/3 h-full left-0 z-50 bg-gray-400 border-gray-600 border-2 rounded-r-xl bg-opacity-75">
-                    <h1 className="top-0 underline text-blue-400 text-4xl absolute w-full text-center">WCA Map Stats</h1>
+                <div className="fixed w-1/3 h-full left-0 z-50 bg-gray-400 border-gray-800 border-2 rounded-r-xl bg-opacity-50">
+                    <h1 className="top-0 underline text-black text-4xl absolute w-full text-center">
+                        WCA Mapping
+                    </h1>
                     <div className="grid place-items-center h-full">
                         <div className="w-2/3 h-1/3 flex flex-col content-center">
-                            {/* I'm pretty sure this logic will break when built; I've had that problem before */}
+                                <div className="sticky text-center bg-gray-200 rounded-xl">{
+                                    wcaData && competitionData && (
+                                        <LocationStats wcaData={wcaData} locationData={competitionData}/>
+                                    )
+                                } </div>
                             <input 
                                 className={`w-full p-2 text-center ${autocomplete ? "rounded-t-xl" : "rounded-xl"}`} 
                                 placeholder="Start typing a name or WCA ID" 
                                 onChange={ handleChange } 
                                 type="text"/>
-                            <div className="sticky text-center bg-gray-200 rounded-b-xl">
+                            <div className="sticky text-center bg-gray-200 rounded-b-xl">                               
                                 {
                                     autocomplete && autocomplete.map((user, key) => {
                                         return (
                                             <div 
                                                 onClick={() => setWcaData(user)}
-                                                className = {
-                                                    key === 0
-                                                    ? "group p-2 text-center border-t-2 border-gray-500 hover: cursor-pointer hover:bg-gray-300" 
-                                                    : "group p-2 text-center border-t-2 border-gray-500 hover: cursor-pointer hover:bg-gray-300 rounded-b-xl" 
-                                                }
+                                                className = "group p-2 text-center border-t-2 border-gray-500 hover: cursor-pointer" 
                                                 key={key}
                                                 >
-                                                <span className="group-hover:text-gray-600 underline text-lg">
+                                                <span className="group-hover:text-blue-600 underline text-lg">
                                                     {user.name}
-                                                    <span className="group-hover:text-gray-600 no-underline text-sm">
+                                                    <span className="group-hover:text-blue-600 no-underline text-sm">
                                                         ({user.wca_id})
                                                     </span>
                                                 </span>
