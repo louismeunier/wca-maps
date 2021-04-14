@@ -10,6 +10,7 @@ export default function Home():JSX.Element {
     </Head>
     <main>
       <FrontPage/>
+      <div className="absolute right-0 bottom-0 w-1/3 h-1/2" id="locationStats"></div>
     </main>
     </>
   );
