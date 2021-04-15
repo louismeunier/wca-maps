@@ -90,14 +90,14 @@ export default function FrontPage():JSX.Element {
 
             <div className="w-screen h-screen m-0">
                 <div className="fixed w-1/3 h-full left-0 z-50 bg-gray-400 border-gray-800 border-2 rounded-r-xl bg-opacity-50">
-                    <h1 className="top-0 underline text-black text-4xl absolute w-full text-center">
+                    <h1 className="top-0 underline font-bold italic text-black text-4xl absolute w-full text-center">
                         WCA Mapping
                     </h1>
                     <div className="grid place-items-center h-full">
                         <div className="w-2/3 h-1/3 flex flex-col content-center">
                                 <div className="sticky text-center bg-gray-200 rounded-xl">{
                                     wcaData && competitionData && (
-                                        <LocationStats wcaData={wcaData} locationData={competitionData}/>
+                                        <LocationStats wcaData={wcaData} locationData={competitionData} center={center}/>
                                     )
                                 } </div>
                             <input 
