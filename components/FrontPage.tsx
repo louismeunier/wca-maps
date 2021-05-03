@@ -34,7 +34,7 @@ export default function FrontPage():JSX.Element {
         : setTimeout(() => {
             searchUsers(e.target.value)
                 .then(res => {
-                    const filteredUsers:WCAUser[] = res.result.filter(user => user.wca_id).slice(0,5);
+                    const filteredUsers:WCAUser[] = res.result.filter(user => user.wca_id && userData.map(u => u.user.wca_id).indexOf(user.wca_id) === -1 ).slice(0,5);
                     setAutocomplete(filteredUsers);
                 })
                 .catch(err => {
@@ -79,7 +79,7 @@ export default function FrontPage():JSX.Element {
                         const averageCoordinate:LatLngExpression = averageGeoPoint(coordinateArray)
                         setCurCenter(averageCoordinate);
                         setCenters([...centers, averageCoordinate]);
-                        setLayers([...layers,<MapLayer notable key={0} position={averageCoordinate} message={`Average: ${user.name}`}/>, ...newLayers])
+                        setLayers([...layers, <MapLayer notable key={0} position={averageCoordinate} message={`Average: ${user.name}`}/>, ...newLayers])
                         setIsLoading(false)
                     })
             })
