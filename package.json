@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@primer/octicons-react": "^13.0.0",
     "@tailwindcss/postcss7-compat": "^2.1.0",
     "autoprefixer": "^9",
     "leaflet": "^1.7.1",

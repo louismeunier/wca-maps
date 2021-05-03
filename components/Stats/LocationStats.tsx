@@ -1,17 +1,26 @@
 import { useEffect, useState } from "react"
+import type { Dispatch, SetStateAction } from "react"
 import { countryCodes } from "@data/country-codes"
 import { createPortal } from "react-dom"
-import { Profile } from "@components/Stats/Profile"
 import type { LatLngExpression } from "leaflet"
 import { getCountry } from "@logic/geo-api"
+import { SinglePersonStats } from "@components/Stats/SinglePersonStats"
+import { ChevronDownIcon, ChevronUpIcon, CircleSlashIcon } from "@primer/octicons-react"
 
-export const LocationStats = (props: { wcaData:WCAUser, locationData:WCACompetition[], center:LatLngExpression }):JSX.Element => {
-    const [countries, setCountries] = useState<{ [key:string]: WCACompetition[] }|null>(null);
+type propsTypes = {
+    userData: userMetaData[]
+    centers: LatLngExpression[],
+    setCurCenter: Dispatch<SetStateAction<LatLngExpression>>,
+    handleClear: any
+}
+
+export const LocationStats = (props: propsTypes):JSX.Element => {
+    const [countries, setCountries] = useState<{ [key:string]: WCACompetition[] }[]|null>(null);
     const [countryCenter, setCountryCenter] = useState<string|null>(null);
 
-    //Utility functions
-    const StatHeader = (props: { header: string }):JSX.Element => { return <div className="underline grid place-items-center text-3xl font-bold italic">{props.header}</div> }
+    const [currentPage, setCurrentPage] = useState<number>(0);
 
+    //Utility functions
     const codeToCountry = (code:string):string|undefined => {
         return countryCodes[code];
     }
@@ -25,60 +34,58 @@ export const LocationStats = (props: { wcaData:WCAUser, locationData:WCACompetit
 
     //Effects
     useEffect(() => {
-        let res: { [key:string]: WCACompetition[] } = {}
-        props.locationData.forEach(competition => {
-            if (res[competition.country_iso2]) res[competition.country_iso2].push(competition)
-            else res[competition.country_iso2] = [competition]
+        console.log(props.userData)
+        let res: { [key:string]: WCACompetition[] }[] = [{}]
+        props.userData.forEach((user, index) => {
+            user.competitions.forEach(competition => {
+                if (!res[index]) res[index] = {}
+                else if (res[index][competition.country_iso2]) res[index][competition.country_iso2].push(competition)
+                else res[index][competition.country_iso2] = [competition]
+            })
         })
         setCountries(res)
-    }, [])
+    }, [props])
 
     useEffect(() => {
-        countries && getCountry(parseFloat(props.center.toString().split(",")[0]), parseFloat(props.center.toString().split(",")[1]))
-            .then(res => {
-                //have to handle error codes if, say, in the middle of the ocean
-                if (res.status) {
-                    setCountryCenter("No country found")
-                } else {
-                    setCountryCenter(res.countryName);
-                }
-                //alert(res.countryName)
-            })
-            .catch(err=>console.log("Failed to get country"))
-    },[countries])
+        setCurrentPage(props.userData.length-1);
+    }, [props.userData])
+    // useEffect(() => {
+    //     countries && getCountry(parseFloat(props.centers[currentPage].toString().split(",")[0]), parseFloat(props.centers[currentPage].toString().split(",")[1]))
+    //         .then(res => {
+    //             //have to handle error codes if, say, in the middle of the ocean
+    //             if (res.status) {
+    //                 setCountryCenter("No country found")
+    //             } else {
+    //                 setCountryCenter(res.countryName);
+    //             }
+    //             //alert(res.countryName)
+    //         })
+    //         .catch(err=>console.log("Failed to get country"))
+    // },[countries])
+
+    useEffect(() => {
+        props.centers[currentPage] && props.setCurCenter(props.centers[currentPage]);
+    },[currentPage])
 
     return (
         createPortal(
-            countries &&
-            <div className="absolute gap-2 grid grid-cols-4 mb-4 h-full max-w-full p-2 right-0 bottom-0 rounded-tl-xl bg-gray-400 border-gray-800 border-2 bg-opacity-80">
-                <StatHeader header="Person:"/>
-                <Profile userInfo={props.wcaData}/>
-                <div className="grid place-items-center">
-                    <div className="h-1/5 text-center">
-                        <StatHeader header="Countries:"/>
-                        <h1>(top 3)</h1>
-                    </div>
+            countries?.length == props.userData.length &&
+            <div className="absolute gap-2 grid grid-rows-3 grid-cols-5 mb-4 h-full max-w-full p-2 right-0 bottom-0 rounded-tl-xl bg-gray-400 border-gray-800 border-2 bg-opacity-80">
+                <div className="grid gap-1 grid-rows-3 row-span-3">
+                    <button disabled={currentPage==props.userData.length-1} className="bg-gray-500 bg-opacity-75 p-2 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => {setCurrentPage(currentPage+1)}}>
+                        <ChevronUpIcon size={48}/>
+                    </button>
+                    <button className="bg-gray-500 bg-opacity-75 p-2 rounded-xl" onClick={ props.handleClear }>
+                        <CircleSlashIcon size={40}/>
+                    </button>
+                    <button disabled={currentPage==0} className="bg-gray-500 bg-opacity-75 p-2 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => {setCurrentPage(currentPage-1)}}>
+                        <ChevronDownIcon size={48}/>
+                    </button>
                 </div>
-                <div className="col-span-3 flex flex-row h-full flex-wrap justify-evenly content-center">
-                    {
-                        countries && Object.keys(countries)
-                            .sort((a,b) => countries[b].length - countries[a].length)
-                            .slice(0,3)
-                            .map((country, key) => {
-                                return (
-                                    <div className="sticky grid h-1/3 place-items-center z-10" key={key}>
-                                        <img className="h-full" src={`https://www.countryflags.io/${country.toLowerCase()}/flat/64.png`}/>
-                                        <h1>{codeToCountry(country)}, {countries[country].length}</h1>
-                                    </div>
-                                )
-                            })  
-                    }
-                </div>
-                <StatHeader header="Other:"/>
-                <div className="col-span-3 grid place-items-center">
-                    <h1 className="text-center text-xl">Avg. Competition Coords: <em className="font-bold not-italic">{latlngToCoordinate(props.center, 3)}</em></h1>
-                    <h2>{countryCenter ? countryCenter : "Calculating country..."}</h2>
-                </div>
+                {
+                    props.centers[currentPage] && 
+                    <SinglePersonStats user={props.userData[currentPage].user} countries={countries[currentPage]} center={props.centers[currentPage]}/>   
+                }
             </div>,
             document.querySelector("#locationStats")!
         )

@@ -1,7 +1,7 @@
 import { LatLngExpression } from "leaflet"
 
 export const averageGeoPoint = (coordinates:number[][]):LatLngExpression => {
-    console.log(coordinates)
+    //console.log(coordinates)
     const toRadians = (degree:number):number => {return degree * (Math.PI/180)}
     const toDegrees = (radians:number):number => {return radians * (180/Math.PI)}
 
